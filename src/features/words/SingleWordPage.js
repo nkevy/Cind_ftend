@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { unwrapResult } from '@reduxjs/toolkit'
 import { MemoriesList } from '../memories/MemoriesList'
 import { AddMemoryForm } from '../memories/AddMemoryForm'
 import { selectAllWords, addWord } from './wordsSlice'
@@ -12,28 +11,15 @@ import { selectAllWords, addWord } from './wordsSlice'
 export const SingleWordPage = ({ match }) => {
 	//fields
 	const { search } = match.params
-	const [ requestStatus, setRequestStatus ] = useState('idle')
 	const dispatch = useDispatch()
 	// find the search arg in store.words
-	let word
-	word = useSelector(selectAllWords).find(i => i.word === search)
+	const word = useSelector(selectAllWords).find(i => i.word === search)
 	//on render add word from url if not already added
 	useEffect(() => {
-		if (!word && requestStatus === 'idle') {
-			try {
-				setRequestStatus('loading')
-				//returns payload get the json then get the word value 
-				const resultAction = dispatch(addWord({'word': search}))
-				console.log(resultAction)
-				word = unwrapResult(resultAction)[0].word
-			} catch (error) {
-				setRequestStatus('fail')
-				
-			} finally {
-				setRequestStatus('complete')
-			}//catch
+		if (!word) {
+				dispatch(addWord({'word': search}))
 		}//if
-	},[search])
+	},[dispatch, word, search])
 	if (!word){
 		return (
 			<section>

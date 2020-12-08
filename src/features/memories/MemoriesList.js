@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux' 
-import { selectAllMemories, getListMemory } from './memoriesSlice'
+import { selectAllMemories, getListMemory, addMemory, memoryWipe } from './memoriesSlice'
+import { addWord } from './../words/wordsSlice'
 import { Link } from 'react-router-dom'
 
 export const MemoriesList = ({ src }) => {
@@ -23,9 +24,25 @@ export const MemoriesList = ({ src }) => {
 	}else if (memoriesStatus === 'complete'){
 		//list memories in order
 		const orderedMemories = memories.slice().sort((a,b) => (a.rank - b.rank))
+		//memory link on click:
+		//	wipe memory
+		//	add the word again for clock update
+		//	add the memory agin for rank update
 		display = orderedMemories.map((memory, index) => (
 			<article className="memory-exerpt" key={memory.word2}>
-				<Link to={`/words/${memory.word2}`} className="button muted-button">
+				<Link
+					to = {`/words/${memory.word2}`}
+					className = "button muted-button"
+					onClick = {() => {
+						dispatch(memoryWipe)
+						dispatch(addWord(
+							{'word':memory.word2}
+						))
+						dispatch(addMemory(
+							{'src':memory.word1, 'dst':memory.word2, 'decrement':false}
+						))
+					}}
+				>
 					<h4>{memory.word2}</h4>
 					<p>associative strength: {memory.rank}</p>
 				</Link>

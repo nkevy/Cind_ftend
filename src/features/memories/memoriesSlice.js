@@ -1,10 +1,10 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { sendPost } from './../../api/hook'
 
+//consider adding a state.word to hold the src word for memories
 const initialState = {
 	memories: [],
 	status: 'idle',
-	word: null,
 	error: null
 }
 
@@ -31,6 +31,7 @@ const memoriesSlice = createSlice({
 		},
 		memoryWipe: state => {
 			state.memories = []
+			state.status = 'idle'
 		}
 	},//reducers
 	extraReducers: {
@@ -39,7 +40,15 @@ const memoriesSlice = createSlice({
 		},
 		[addMemory.fulfilled]: (state, action) => {
 			state.status = 'complete'
-			state.memories = state.memories.concat(action.payload)
+			const index = state.memories.findIndex(memory => 
+				memory.word2 === action.payload[0].word2
+			)
+			//word exists in state then replace
+			if (index === -1){
+				state.memories = state.memories.concat(action.payload)
+			}else{
+				state.memories[index] = action.payload[0]
+			}
 		},
 		[addMemory.rejected]: (state, action) => {
 			state.status = 'fail'

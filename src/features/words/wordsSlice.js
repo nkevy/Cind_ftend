@@ -76,12 +76,11 @@ const wordsSlice = createSlice({
 		},
 		[addWord.fulfilled]: (state, action) => {
 			state.status = 'complete'
-			const check = state.words.findIndex(word => word.word === action.payload[0].word)
-			console.log(check)
-			if (check === -1){
+			const index = state.words.findIndex(word => word.word === action.payload[0].word)
+			if (index === -1){
 				state.words = state.words.concat(action.payload)
 			}else{
-				state.words[check] = action.payload[0]
+				state.words[index] = action.payload[0]
 			}
 		},
 		[addWord.rejected]: (state, action) => {
